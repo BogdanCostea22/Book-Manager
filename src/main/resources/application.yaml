@@ -1,0 +1,26 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    username: ${DATABASE_USERNAME:username}
+    password: ${DATABASE_PASSWORD:password}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:5432/book-manager
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    user: ${DATABASE_USERNAME:username}
+    password: ${DATABASE_PASSWORD:password}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:5432/book-manager
+    table: FLYWAY_TABLE_VERSION
+    locations: classpath:db/migration
+
+server:
+  port: 8080
+
+open:
+  library:
+    baseUrl: https://openlibrary.org
+
+logging:
+  level:
+    root: debug
