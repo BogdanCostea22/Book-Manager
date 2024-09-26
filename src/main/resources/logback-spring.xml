@@ -1,0 +1,44 @@
+<configuration>
+
+    <!-- Console appender that outputs logs in JSON format -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <!-- Time of log in ISO8601 format -->
+                <timestamp>
+                    <timeZone>UTC</timeZone>
+                </timestamp>
+
+                <!-- Log level -->
+                <logLevel/>
+
+                <!-- Logger name -->
+                <loggerName/>
+
+                <!-- Thread name -->
+                <threadName/>
+
+                <!-- Log message -->
+                <message/>
+
+                <!-- Mapped Diagnostic Context (MDC) -->
+                <mdc/>
+
+                <!-- Exception (if any) -->
+                <stackTrace/>
+
+                <!-- Context Name (optional) -->
+                <contextName/>
+
+                <!-- Arguments (optional, logs method parameters if any) -->
+                <arguments/>
+            </providers>
+        </encoder>
+    </appender>
+
+    <!-- Root logger configuration -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
