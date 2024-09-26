@@ -1,6 +1,6 @@
-# Spring Boot Microservice Project
+# Book Manager
 
-This project is a Spring Boot microservice that demonstrates [brief description of what the service does].
+Book Manager is a Spring Boot application that provides a RESTful API for managing books. It integrates with the Open Library API and uses a PostgreSQL database for local storage.
 
 ## Prerequisites
 
@@ -9,9 +9,25 @@ This project is a Spring Boot microservice that demonstrates [brief description 
 - Java 21 or later
 - Maven (optional, if you want to run without Docker)
 
-## Running the Project
+## Project Structure
 
-### Using Docker Compose
+- `src/main/kotlin/` - Kotlin source files
+   - `controller/` - REST API controllers
+   - `service/` - Business logic
+   - `repository/` - Data access layer
+   - `model/` - Data models
+   - `client/` - External API client (Open Library)
+- `src/test/kotlin/` - Test files
+- `src/main/resources/` - Application properties and static resources
+- `Dockerfile` - Docker configuration for the application
+- `docker-compose.yml` - Docker Compose configuration
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+
+## Running the Application
 
 1. Clone the repository:
    ```
@@ -19,117 +35,82 @@ This project is a Spring Boot microservice that demonstrates [brief description 
    cd Book-Manager
    ```
 
-2. Build the Docker image:
+2. Build and run the application using Docker Compose:
    ```
-   docker-compose build
-   ```
-
-3. Start the services:
-   ```
-   docker-compose up
+   docker-compose up --build
    ```
 
-   This will start the Spring Boot application and any dependent services (like databases) defined in the `docker-compose.yml` file.
+   This command will:
+   - Build the Spring Boot application
+   - Start a PostgreSQL database
+   - Run the application and connect it to the database
 
-4. The application should now be running and accessible at `http://localhost:8080` (or the port specified in your Docker Compose file).
+3. The application will be available at `http://localhost:8080`
 
-### Running without Docker
+## API Endpoints
 
-1. Ensure you have Java 17+ and Maven installed.
+- `GET /api/v1/books` - Retrieve all books
+- `GET /api/v1/books/{id}` - Retrieve a specific book
+- `POST /api/v1/books` - Create a new book
+- `GET /api/v1/books/search?title={title}` - Search books by title
 
-2. Build the project:
-   ```
-   mvn clean package
-   ```
+## Running Tests
 
-3. Run the application:
-   ```
-   java -jar target/your-application-name.jar
-   ```
-
-## API Documentation
-
-[Briefly describe how to access API documentation, e.g., Swagger UI]
-
-## Testing
-
-To run the tests:
+To run the tests, use the following command:
 
 ```
-mvn test
+./gradlew test
+```
+
+For integration tests:
+
+```
+./gradlew test
 ```
 
 ## Future Improvements
 
-### 1. Introducing Coroutines
+1. Introduce Coroutines:
+   - Update the project to use Kotlin coroutines for asynchronous programming.
+   - Modify service methods to be suspend functions.
+   - Use `kotlinx-coroutines-reactor` to bridge with Spring's reactive types.
 
-To improve the application's scalability and performance, we can introduce Kotlin coroutines:
-
-1. Add the coroutines dependency to `pom.xml`:
-   ```xml
-   <dependency>
-       <groupId>org.jetbrains.kotlinx</groupId>
-       <artifactId>kotlinx-coroutines-core</artifactId>
-       <version>${kotlinx-coroutines.version}</version>
-   </dependency>
-   ```
-
-2. Convert blocking operations to suspend functions:
+   Example:
    ```kotlin
-   suspend fun fetchData(): Data = withContext(Dispatchers.IO) {
-       // Perform blocking operation
+   suspend fun getBook(id: String): Book = withContext(Dispatchers.IO) {
+       bookRepository.findById(id).awaitSingle()
    }
    ```
 
-3. Use coroutine scopes in your services:
+2. Use Reactive Database Client:
+   - Replace Spring Data JPA with Spring Data R2DBC for reactive database operations.
+   - Update repositories to extend from `ReactiveCrudRepository`.
+   - Modify service layer to work with reactive types (Flux/Mono).
+
+   Example:
    ```kotlin
-   class MyService(private val coroutineScope: CoroutineScope) {
-       fun processData() = coroutineScope.launch {
-           // Asynchronous processing
-       }
+   interface BookRepository : ReactiveCrudRepository<Book, String> {
+       fun findByTitleContaining(title: String): Flux<Book>
    }
    ```
 
-### 2. Using a Reactive Database Client
+3. Implement Caching:
+   - Add caching for frequently accessed data to improve performance.
 
-To further enhance performance, consider using a reactive database client:
+4. Enhance Error Handling:
+   - Implement a global exception handler for consistent error responses.
 
-1. Add the reactive database driver to `pom.xml`. For example, for R2DBC with PostgreSQL:
-   ```xml
-   <dependency>
-       <groupId>io.r2dbc</groupId>
-       <artifactId>r2dbc-postgresql</artifactId>
-   </dependency>
-   ```
+5. Add API Documentation:
+   - Integrate Swagger/OpenAPI for automated API documentation.
 
-2. Configure the R2DBC connection in `application.properties`:
-   ```
-   spring.r2dbc.url=r2dbc:postgresql://localhost:5432/mydatabase
-   spring.r2dbc.username=myuser
-   spring.r2dbc.password=mypassword
-   ```
+6. Implement Authentication and Authorization:
+   - Add Spring Security to protect endpoints.
 
-3. Use reactive repositories in your data access layer:
-   ```kotlin
-   interface UserRepository : ReactiveCrudRepository<User, Long> {
-       fun findByUsername(username: String): Mono<User>
-   }
-   ```
+7. Containerize for Production:
+   - Optimize the Dockerfile for a production environment.
 
-4. Adjust your services to work with reactive types:
-   ```kotlin
-   class UserService(private val userRepository: UserRepository) {
-       suspend fun getUser(username: String): User? =
-           userRepository.findByUsername(username).awaitFirstOrNull()
-   }
-   ```
+8. Implement Logging:
+   - Add comprehensive logging throughout the application.
 
-By implementing these improvements, you can significantly enhance the application's ability to handle concurrent operations and scale effectively.
-
-## Contributing
-
-[Explain how others can contribute to the project]
-
-## License
-
-[Specify the license under which the project is released]
+9. Set Up CI/CD:
+   - Configure GitHub Actions for continuous integration and deployment.
