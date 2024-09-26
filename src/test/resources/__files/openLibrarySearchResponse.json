@@ -1,0 +1,11 @@
+{
+  "docs": [
+    {
+      "key": "/works/OL12345W",
+      "title": "Example Search Result",
+      "author_name": ["John Doe"],
+      "first_publish_year": 2023,
+      "language": ["eng"]
+    }
+  ]
+}
